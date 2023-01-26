@@ -6,18 +6,18 @@ function show_sub_category($id){
 
   global $db;
 
-  $cat_sql = "SELECT * FROM fashion_category  WHERE is_parent = '$id'";
+  $cat_sql = "SELECT * FROM fashion_category  WHERE is_parent = '$id' ORDER BY f_name ASC";
                 $cat_res = mysqli_query($db,$cat_sql);
                 while ($row = mysqli_fetch_assoc($cat_res)) {
                   $id = $row['id'];
                   $f_name = $row['f_name'];
-                  $f_image = $row['f_image'];
+                  $cat_image = $row['f_image'];
                   $f_status = $row['f_status'];
                   ?>
                   <tr>
                     <th scope="row"><?php echo '--';?></th>
                     <td>
-                      <img src="assets/img/icon/<?php echo $f_image;?>" width = "50">
+                      <img src="assets/img/icon/<?php echo $cat_image;?>" width = "60">
                     </td>
                     <td><?php echo $f_name;?></td>
                     <td><?php if($f_status == 1)echo "<span class ='badge bg-success'>Active</span>"; else echo "<span class ='badge bg-danger'>Inactive</span>" ;?></td>
@@ -46,6 +46,56 @@ function show_sub_category($id){
                   <?php
                    }           
 }
+
+
+// brand insert function 
+
+function is_img($file_name){
+  global $db;
+
+  $split = explode('.', $file_name);
+  $extn = strtolower(end($split));
+  $compaire = array('jpg','png');
+
+  if (in_array($extn,$compaire) === true) {
+    return true;
+  }else{
+    return false;
+  }
+
+
+}
+
+
+// delete function 
+
+function delete($table,$key,$delid,$redirect){
+  global $db;
+  $del_sql = "DELETE FROM $table WHERE $key = '$delid'";
+  $del_sql_res = mysqli_query($db,$del_sql);
+
+  if ($del_sql_res) {
+    header('location: '.$redirect);
+  }else {
+    die('error from delete function !'.mysqli_error($db));
+  }
+}
+
+
+// delete image function 
+
+function delete_img($fa_name,$table,$pkey,$nkey,$path){
+  global $db;
+  $del_file = mysqli_query($db,"SELECT $fa_name FROM $table WHERE $pkey = '$nkey'");
+  $row = mysqli_fetch_assoc($del_file);
+
+  $f_name = $row['f_image'];
+
+  unlink($path.$f_name);
+
+
+}
+
 
 ?>
 

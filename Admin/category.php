@@ -8,8 +8,9 @@
       <h1>Dashboard</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item active">Dashboard</li>
+          <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+          <li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>
+          <li class="breadcrumb-item active">category</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -67,8 +68,8 @@
                 <div class="col-lg-12">
                   <label class = "my-2">status</label>
                 <select class="form-select" name="f_status">
-                    <option <?php if($uf_status == 1) echo "selected";?>>Active</option>
-                    <option <?php if($uf_status == 0) echo "selected";?>>Inactive</option>
+                    <option value="1" <?php if($uf_status == 1) echo "selected";?>>Active</option>
+                    <option value="0"  <?php if($uf_status == 0) echo "selected";?>>Inactive</option>
               </select>
                 </div>
               </div>
@@ -76,7 +77,7 @@
                 
                 <label class = "mt-2">Choose Category Image</label>
                    <div class="c-img">
-                   <div id="img-preview"></div>
+                   <!-- <div id="img-preview"></div> -->
                     <?php
                     if (empty($uf_image)) {
                       echo '<p class="alert alert-danger">No Found Image</p>';
@@ -89,8 +90,8 @@
                     <input type="file" id="choose-file"name="choose-file" accept="image/*" />
                     <label for="choose-file">Choose File</label>
                    </div>
-                   <input type="hidden" name="edit" value = "<?php echo $uid;?>">
-                <div class="text-start">
+                   <div class="text-start">
+                  <input type="hidden" name="edit" value = "<?php echo $uid;?>">
                   <button type="submit" class="btn btn-primary" name="update_category">update</button>
                 </div>
               </form><!-- End No Labels Form --><?php
@@ -168,7 +169,7 @@
 
                 <?php
                 
-                $sql = "SELECT * FROM fashion_category  WHERE is_parent = '0'";
+                $sql = "SELECT * FROM fashion_category  WHERE is_parent = '0' ORDER BY f_name ASC";
                 $res = mysqli_query($db,$sql);
                 $serial = 0;
                 while ($row = mysqli_fetch_assoc($res)) {
@@ -232,13 +233,10 @@
           
           if (isset($_GET['delid'])) {
             $deleteid = $_GET['delid'];
-            $del_res = mysqli_query($db,"DELETE FROM fashion_category WHERE id='$deleteid'");
+            // delete image from folder
+            delete_img('f_image','fashion_category','id', $deleteid,'assets/img/icon/');
 
-            if ($del_res) {
-              header('location: category.php');
-            }else {
-              die('error from delete function'.mysqli_error($db));
-            }
+            delete('fashion_category','id',$deleteid,'category.php');
 
           }
           
